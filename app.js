@@ -41,7 +41,8 @@ function setView(id) {
 
 function renderSession() {
   $("#committeeTitle").textContent = session.committeeTitle;
-  $("#ballotTitle").textContent = session.ballotTitle;
+  $("#ballotTitle").textContent = session.ballotTitle || "";
+  $("#ballotTitle").classList.toggle("hidden", !session.ballotTitle);
   $("#notice").textContent = session.notice;
   const badge = $("#openBadge");
   badge.textContent = session.isOpen ? "투표 진행 중" : "투표 마감";
