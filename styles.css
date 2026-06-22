@@ -54,7 +54,7 @@ canvas { width: 100%; height: 170px; border: 1px solid var(--line); border-radiu
 .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 12px; }
 .stats span { border-radius: 8px; background: #f2f6fa; padding: 12px; text-align: center; }
 .stats strong { display: block; font-size: 24px; color: var(--brand); }
-.button-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.button-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 .results { margin-top: 14px; display: grid; gap: 8px; }
 .result-item { border: 1px solid var(--line); border-radius: 8px; padding: 11px; background: #fbfcfe; font-size: 14px; }
 .toast { position: fixed; left: 50%; bottom: max(16px, env(safe-area-inset-bottom)); transform: translateX(-50%) translateY(120%); width: min(560px, calc(100% - 32px)); border-radius: 8px; padding: 13px 14px; background: #111827; color: white; box-shadow: 0 12px 32px rgba(0,0,0,.24); transition: transform .18s ease; z-index: 10; }
