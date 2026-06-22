@@ -172,6 +172,15 @@ input:focus, canvas:focus {
   gap: 10px;
 }
 
+.compact-actions {
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.compact-actions .ghost {
+  min-height: 38px;
+}
+
 .confirmed {
   border-radius: 8px;
   padding: 10px 12px;
@@ -318,6 +327,12 @@ canvas {
 
   .row {
     align-items: stretch;
+  }
+
+  .compact-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+    width: 100%;
   }
 
   .voter-row {
