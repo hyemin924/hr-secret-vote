@@ -1,0 +1,12 @@
+{
+  "name": "hr-secret-vote",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Mobile-friendly secret ballot app for personnel advisory committee meetings.",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
