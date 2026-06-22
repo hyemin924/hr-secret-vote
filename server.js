@@ -13,7 +13,7 @@ const PUBLIC_DIR = path.join(__dirname, "public");
 const defaultData = {
   session: {
     committeeTitle: "인사자문위원회 비밀투표",
-    ballotTitle: "본관동 여유교실 우선순위 교과 선정",
+    ballotTitle: "",
     priorityCount: 3,
     isOpen: true,
     notice: "직위, 성함, 핸드폰번호 뒷자리 4개를 입력한 뒤 우선순위 교과를 작성하고 서명해 주세요."
@@ -298,5 +298,5 @@ server.listen(PORT, () => {
   for (const url of getLocalUrls(PORT)) {
     console.log(`핸드폰 접속 주소: ${url}`);
   }
-  console.log("관리자 비밀번호는 설정된 운영 비밀번호를 사용하세요.");
+  console.log("혜민 비밀번호는 설정된 운영 비밀번호를 사용하세요.");
 });
