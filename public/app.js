@@ -48,7 +48,7 @@ function renderPriorityFields() {
     const input = document.createElement("input");
     input.name = "priority";
     input.required = true;
-    input.placeholder = i === 1 ? "예: 과학" : `${i}순위 교과명`;
+    input.placeholder = i === 1 ? "예: 과학" : i === 2 ? "예: 미술" : `${i}순위 교과명`;
     label.appendChild(input);
     wrap.appendChild(label);
   }
