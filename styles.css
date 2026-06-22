@@ -40,6 +40,8 @@ input:focus, canvas:focus { outline: 3px solid rgba(31, 106, 165, .18); border-c
 .danger { border-color: #ffd2cf; background: #fff6f5; color: var(--danger); font-weight: 800; }
 .muted { color: var(--muted); line-height: 1.55; }
 .row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.compact-actions { flex-wrap: wrap; justify-content: flex-end; }
+.compact-actions .ghost { min-height: 38px; }
 .confirmed { border-radius: 8px; padding: 10px 12px; background: #eef6ff; color: var(--brand); font-weight: 700; }
 .priority-list { display: grid; gap: 2px; }
 .signature-label { margin-top: 8px; }
@@ -65,5 +67,6 @@ canvas { width: 100%; height: 170px; border: 1px solid var(--line); border-radiu
   .hero { display: grid; padding-top: 14px; }
   .panel { padding: 15px; }
   .row { align-items: stretch; }
+  .compact-actions { display: grid; grid-template-columns: 1fr; width: 100%; }
   .voter-row, .stats, .button-grid { grid-template-columns: 1fr; }
 }
