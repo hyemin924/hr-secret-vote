@@ -1,0 +1,116 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#123c69">
+  <title>인사자문위원회 비밀투표</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">Secret Ballot</p>
+        <h1 id="committeeTitle">인사자문위원회 비밀투표</h1>
+        <p id="ballotTitle">본관동 여유교실 우선순위 교과 선정</p>
+      </div>
+      <span id="openBadge" class="badge">투표 진행 중</span>
+    </section>
+
+    <nav class="tabs" aria-label="화면 선택">
+      <button class="tab active" data-view="voteView">투표</button>
+      <button class="tab" data-view="adminView">관리</button>
+    </nav>
+
+    <section id="setupWarning" class="panel hidden">
+      <h2>Supabase 연결 필요</h2>
+      <p class="muted">무료 외부망 운영을 위해 Supabase 프로젝트 URL과 anon key를 <code>config.js</code>에 입력해야 합니다.</p>
+    </section>
+
+    <section id="voteView" class="view active">
+      <form id="verifyForm" class="panel">
+        <h2>참여자 확인</h2>
+        <p id="notice" class="muted">직위, 성함, 핸드폰번호 뒷자리 4개를 입력해 주세요.</p>
+        <label>직위<input name="position" autocomplete="organization-title" required placeholder="예: 교사"></label>
+        <label>성함<input name="name" autocomplete="name" required placeholder="예: 홍길동"></label>
+        <label>핸드폰번호 뒷자리 4개<input name="code" inputmode="numeric" maxlength="4" autocomplete="tel" required placeholder="예: 6789"></label>
+        <button class="primary" type="submit">확인하고 투표하기</button>
+      </form>
+
+      <form id="voteForm" class="panel hidden">
+        <div class="row">
+          <h2>우선순위 입력</h2>
+          <button id="backToVerify" class="ghost" type="button">다시 확인</button>
+        </div>
+        <p id="confirmedVoter" class="confirmed"></p>
+        <div id="priorityFields" class="priority-list"></div>
+        <label class="signature-label">서명
+          <canvas id="signaturePad" width="640" height="240" aria-label="서명 입력 영역"></canvas>
+        </label>
+        <div class="row">
+          <button id="clearSignature" class="ghost" type="button">서명 지우기</button>
+          <button class="primary" type="submit">비밀투표 제출</button>
+        </div>
+      </form>
+
+      <section id="donePanel" class="panel success hidden">
+        <h2>제출이 완료되었습니다</h2>
+        <p>투표 내용은 참여자 명단과 분리되어 저장됩니다.</p>
+        <p class="receipt">접수번호: <strong id="receiptCode"></strong></p>
+      </section>
+    </section>
+
+    <section id="adminView" class="view">
+      <form id="loginForm" class="panel">
+        <h2>관리자 로그인</h2>
+        <label>관리자 비밀번호<input name="password" type="password" autocomplete="current-password" required placeholder="비밀번호 입력"></label>
+        <button class="primary" type="submit">관리 화면 열기</button>
+      </form>
+
+      <div id="adminPanel" class="hidden">
+        <section class="panel">
+          <div class="row">
+            <h2>투표 설정</h2>
+            <label class="switch"><input id="isOpen" type="checkbox"> 투표 열기</label>
+          </div>
+          <label>위원회명<input id="adminCommitteeTitle"></label>
+          <label>투표 안건<input id="adminBallotTitle"></label>
+          <label>입력 순위 수<input id="priorityCount" type="number" min="1" max="10"></label>
+          <label>안내문<input id="adminNotice"></label>
+          <button id="saveAdmin" class="primary" type="button">설정 저장</button>
+        </section>
+
+        <section class="panel">
+          <div class="row">
+            <h2>참여자 명단</h2>
+            <button id="addVoter" class="ghost" type="button">참여자 추가</button>
+          </div>
+          <div id="voterRows" class="voter-rows"></div>
+          <p class="muted">핸드폰번호 뒷자리 4개를 입력해 주세요. 같은 뒷자리 번호가 있을 수 있으므로 직위와 성함도 함께 확인합니다.</p>
+        </section>
+
+        <section class="panel">
+          <h2>진행 현황</h2>
+          <div class="stats">
+            <span><strong id="statVoters">0</strong>명 등록</span>
+            <span><strong id="statDone">0</strong>명 제출</span>
+            <span><strong id="statVotes">0</strong>표 접수</span>
+          </div>
+          <div class="button-grid">
+            <button id="downloadVoters" class="ghost" type="button">참여자 CSV</button>
+            <button id="downloadVotes" class="ghost" type="button">투표 CSV</button>
+            <button id="resetVotes" class="danger" type="button">투표 초기화</button>
+          </div>
+          <div id="voteResults" class="results"></div>
+        </section>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>
