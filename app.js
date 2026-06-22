@@ -316,6 +316,19 @@ function setupAdmin() {
     downloadCsv("secret-votes.csv", rows);
   });
 
+  $("#downloadCombined").addEventListener("click", () => {
+    const rows = [["직위", "성함", "핸드폰번호 뒷자리 4개", "접수번호", "제출시각", ...Array.from({ length: adminState.session.priorityCount }, (_, i) => `${i + 1}순위`)]];
+    adminState.votes.forEach(v => rows.push([
+      v.voter_position || "",
+      v.voter_name || "",
+      v.voter_phone_last4 || "",
+      v.receipt,
+      v.submitted_at,
+      ...v.priorities
+    ]));
+    downloadCsv("combined-votes.csv", rows);
+  });
+
   $("#resetVotes").addEventListener("click", async () => {
     if (!confirm("제출된 투표와 서명 기록을 초기화할까요?")) return;
     try {
