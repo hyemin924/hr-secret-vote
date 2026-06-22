@@ -212,6 +212,79 @@ function voterRow(voter = {}) {
   return row;
 }
 
+function normalizeColumnName(value) {
+  return String(value || "").replace(/[\s()[\]{}_\-./]/g, "").toLowerCase();
+}
+
+function findColumn(headers, candidates) {
+  const normalized = headers.map(normalizeColumnName);
+  return normalized.findIndex(header => candidates.some(candidate => header.includes(candidate)));
+}
+
+function phoneLast4(value) {
+  const digits = String(value ?? "").replace(/\D/g, "");
+  return digits.slice(-4);
+}
+
+function compactVisibleRows() {
+  $$("#voterRows .voter-row").forEach(row => {
+    const values = [".v-position", ".v-name", ".v-code"].map(selector => row.querySelector(selector).value.trim());
+    if (values.every(value => !value) && !row.dataset.id) row.remove();
+  });
+}
+
+function rowsFromWorkbook(workbook) {
+  const sheet = workbook.Sheets[workbook.SheetNames[0]];
+  const table = window.XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+  const headerIndex = table.findIndex(row => row.some(cell => normalizeColumnName(cell)));
+  if (headerIndex < 0) return [];
+
+  const headers = table[headerIndex];
+  let positionIndex = findColumn(headers, ["직위", "직책", "직급"]);
+  let nameIndex = findColumn(headers, ["성함", "성명", "이름", "name"]);
+  let phoneIndex = findColumn(headers, ["핸드폰번호뒷자리4개", "휴대폰번호뒷자리4개", "전화번호뒷자리4개", "핸드폰", "휴대폰", "전화번호", "뒷자리", "phone"]);
+
+  if (positionIndex < 0 && nameIndex < 0) {
+    positionIndex = 0;
+    nameIndex = 1;
+    phoneIndex = 2;
+  }
+
+  return table.slice(headerIndex + 1).map(row => ({
+    position: String(row[positionIndex] || "").trim(),
+    name: String(row[nameIndex] || "").trim(),
+    phone_last4: phoneLast4(row[phoneIndex])
+  })).filter(voter => voter.position || voter.name || voter.phone_last4);
+}
+
+async function importVotersFromFile(file) {
+  if (!window.XLSX) throw new Error("엑셀 읽기 라이브러리를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.");
+  const buffer = await file.arrayBuffer();
+  const workbook = window.XLSX.read(buffer, { type: "array" });
+  const voters = rowsFromWorkbook(workbook);
+  if (!voters.length) throw new Error("엑셀에서 참여자 명단을 찾지 못했습니다.");
+
+  compactVisibleRows();
+  voters.forEach(voter => $("#voterRows").appendChild(voterRow(voter)));
+  toast(`${voters.length}명을 엑셀에서 불러왔습니다. 저장 버튼을 눌러 반영해 주세요.`);
+}
+
+function downloadSampleWorkbook() {
+  const rows = [
+    ["직위", "성함", "핸드폰번호 뒷자리 4개"],
+    ["교장", "홍길동", "1234"],
+    ["교감", "김영희", "5678"]
+  ];
+  if (window.XLSX) {
+    const workbook = window.XLSX.utils.book_new();
+    const sheet = window.XLSX.utils.aoa_to_sheet(rows);
+    window.XLSX.utils.book_append_sheet(workbook, sheet, "참여자명단");
+    window.XLSX.writeFile(workbook, "participants-template.xlsx");
+    return;
+  }
+  downloadCsv("participants-template.csv", rows);
+}
+
 function renderAdmin() {
   $("#loginForm").classList.add("hidden");
   $("#adminPanel").classList.remove("hidden");
@@ -289,6 +362,21 @@ function setupAdmin() {
   });
 
   $("#addVoter").addEventListener("click", () => $("#voterRows").appendChild(voterRow()));
+
+  $("#downloadSample").addEventListener("click", downloadSampleWorkbook);
+
+  $("#uploadVoters").addEventListener("click", () => $("#voterFile").click());
+
+  $("#voterFile").addEventListener("change", async (event) => {
+    const file = event.currentTarget.files?.[0];
+    event.currentTarget.value = "";
+    if (!file) return;
+    try {
+      await importVotersFromFile(file);
+    } catch (error) {
+      toast(error.message);
+    }
+  });
 
   $("#saveAdmin").addEventListener("click", async () => {
     try {
