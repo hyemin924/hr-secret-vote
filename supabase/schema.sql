@@ -19,6 +19,10 @@ create table if not exists voters (
 create table if not exists votes (
   receipt text primary key,
   submitted_at timestamptz not null default now(),
+  voter_id uuid,
+  voter_position text,
+  voter_name text,
+  voter_phone_last4 text,
   priorities jsonb not null
 );
 
@@ -132,7 +136,8 @@ begin
   end if;
 
   receipt := 'receipt-' || encode(gen_random_bytes(8), 'hex');
-  insert into votes (receipt, priorities) values (receipt, to_jsonb(cleaned));
+  insert into votes (receipt, voter_id, voter_position, voter_name, voter_phone_last4, priorities)
+  values (receipt, v.id, v.position, v.name, v.phone_last4, to_jsonb(cleaned));
   update voters set has_voted = true, signature = p_signature, signed_at = now() where id = v.id;
 
   return jsonb_build_object('receipt', receipt);
