@@ -28,7 +28,7 @@ alter table votes enable row level security;
 
 insert into app_settings (key, value) values
   ('committee_title', '"인사자문위원회 비밀투표"'),
-  ('ballot_title', '"본관동 여유교실 우선순위 교과 선정"'),
+  ('ballot_title', '""'),
   ('priority_count', '3'),
   ('is_open', 'true'),
   ('notice', '"직위, 성함, 핸드폰번호 뒷자리 4개를 입력한 뒤 우선순위 교과를 작성하고 서명해 주세요."')
@@ -59,7 +59,7 @@ create or replace function get_public_session()
 returns jsonb language sql stable security definer as $$
   select jsonb_build_object(
     'committeeTitle', setting_text('committee_title', '인사자문위원회 비밀투표'),
-    'ballotTitle', setting_text('ballot_title', '본관동 여유교실 우선순위 교과 선정'),
+    'ballotTitle', setting_text('ballot_title', ''),
     'priorityCount', setting_text('priority_count', '3')::int,
     'isOpen', setting_text('is_open', 'true')::boolean,
     'notice', setting_text('notice', '직위, 성함, 핸드폰번호 뒷자리 4개를 입력한 뒤 우선순위 교과를 작성하고 서명해 주세요.')
@@ -165,7 +165,7 @@ begin
 
   insert into app_settings (key, value) values
     ('committee_title', to_jsonb(coalesce(p_state #>> '{session,committeeTitle}', '인사자문위원회 비밀투표'))),
-    ('ballot_title', to_jsonb(coalesce(p_state #>> '{session,ballotTitle}', '본관동 여유교실 우선순위 교과 선정'))),
+    ('ballot_title', to_jsonb(coalesce(p_state #>> '{session,ballotTitle}', ''))),
     ('priority_count', to_jsonb(greatest(1, least(10, coalesce((p_state #>> '{session,priorityCount}')::int, 3))))),
     ('is_open', to_jsonb(coalesce((p_state #>> '{session,isOpen}')::boolean, true))),
     ('notice', to_jsonb(coalesce(p_state #>> '{session,notice}', '')))
@@ -207,8 +207,8 @@ begin
     return jsonb_build_object('error', '비밀번호가 올바르지 않습니다.');
   end if;
 
-  delete from votes;
-  update voters set has_voted = false, signature = null, signed_at = null;
+  delete from votes where true;
+  update voters set has_voted = false, signature = null, signed_at = null where true;
   return jsonb_build_object('ok', true);
 end;
 $$;
